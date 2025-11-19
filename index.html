@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Cities — Shift Carousel with Bullets (Namespaced)</title>
+<style>
+  /* Namespaced CSS variables to avoid collisions */
+  :root{
+    --uw-gap:16px;
+    --uw-arrow-size:46px;
+    --uw-auto-interval:4000ms; /* auto-advance interval */
+    --uw-transition-time:800ms; /* slide transition */
+    --uw-side-spacing:18px; /* space between arrows and carousel */
+    --uw-visible: 3;
+  }
+
+  /* Scope everything under the carousel root so nothing touches global styles */
+  .uw-carousel-root * { box-sizing: border-box; }
+  .uw-carousel-root { font-family: system-ui, Roboto, Arial, sans-serif; color: #111; }
+
+  .uw-carousel-container{
+    max-width:1100px;
+    margin:0 auto;
+    text-align:center;
+  }
+  .uw-carousel-heading{
+    font-size:22px;
+    font-weight:700;
+    margin-bottom:18px;
+    color: #6ec1e4;
+  }
+
+  .uw-carousel-layout{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:var(--uw-side-spacing);
+  }
+
+  /* arrows: only glyph (no background/box) */
+  .uw-arrow{
+    background: none;
+    border: none;
+    color: #6ec1e4;      /* arrow color */
+    font-size: 30px;    /* adjust size */
+    cursor: pointer;
+    padding: 0;
+  }
+  .uw-arrow:active{ transform: scale(.92) }
+
+  .uw-viewport{
+    overflow:hidden;
+    flex:1;
+    border-radius:10px;
+    background:#fff;
+    padding:14px 8px; /* internal padding so logos don't touch edges */
+  }
+
+  .uw-track{
+    display:flex;
+    gap:var(--uw-gap);
+    align-items:center;
+    transition: transform var(--uw-transition-time) cubic-bezier(.22,.9,.35,1);
+    will-change: transform;
+  }
+
+  /* === IMPORTANT: force exactly --uw-visible slides in viewport === */
+  .uw-slide{
+    flex: 0 0 calc((100% - ((var(--uw-visible) - 1) * var(--uw-gap))) / var(--uw-visible));
+    max-width: calc((100% - ((var(--uw-visible) - 1) * var(--uw-gap))) / var(--uw-visible));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .uw-slide a{ display:block; padding:6px }
+  .uw-slide img{
+    width:180px;
+    height:180px;
+    object-fit: contain;
+    border-radius:8px;
+    display:block;
+    user-select:none;
+    -webkit-user-drag:none;
+    transition: transform .18s;
+  }
+  .uw-slide img:hover{ transform: scale(1.06) }
+
+  /* bullets */
+  .uw-bullets{ display:flex; gap:10px; justify-content:center; margin-top:14px }
+  .uw-bullet{
+    width:5px; height:5px; border-radius:50%;
+    background:#d3d3d3; cursor:pointer;
+    transition: transform .18s, background .18s;
+  }
+  .uw-bullet.uw-active{ background:#111; transform:scale(1.18) }
+  .uw-carousel-heading{
+      font-size: 22px;
+      font-family: 'proxima nova rg';
+  }
+
+  /* responsive tweaks (namespaced variables) */
+ 
+  @media (max-width:600px){
+    :root{
+      --uw-arrow-size:36px;
+      --uw-gap:10px;
+      --uw-side-spacing:10px;
+      --uw-transition-time:360ms;
+      --uw-visible: 3; 
+    }
+    .uw-carousel-heading{ font-size:18px }
+    .uw-carousel-layout{
+      gap:8px;
+    }
+    .uw-arrow{
+      font-size:16px;
+    }
+    .uw-slide img{
+      width:130px;
+      height:130px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Carousel root (single wrapper to scope CSS + JS) -->
+<div class="uw-carousel-root">
+  <div class="uw-carousel-container" id="uw-carousel-1">
+    <h2 class="uw-carousel-heading"></h2>
+
+    <div class="uw-carousel-layout" aria-hidden="false">
+      <button class="uw-arrow" id="uw-prevBtn" aria-label="Previous">&#10094;</button>
+
+      <div class="uw-viewport" id="uw-viewport" tabindex="0" aria-roledescription="carousel" aria-label="Cities carousel">
+        
+        <div class="uw-track" id="uw-track">
+          <!-- ORIGINAL SLIDES: replace href/src/alt with your real links & images -->
+          <div class="uw-slide"><a href="https://biometrust.org/" target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/08/1.png" alt=" 1"></a></div>
+          
+          <div class="uw-slide"><a href="http://www.acwadam.org/" target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/08/3.png" alt="2"></a></div>
+          
+          <div class="uw-slide"><a href="https://bhujalabhiyan.org/" target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/10/bhujal_.png" alt="3"></a></div>
+          
+          <div class="uw-slide"><a href="https://www.jeevitnadi.org/" target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/09/7-1.png" alt="4"></a></div>
+          
+           <div class="uw-slide"><a href="https://gurujal.org/" target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/10/Gurujal.png" alt="5"></a></div>
+          
+          
+          <!-- extra slide if you need -->
+          <div class="uw-slide"><a href="https://hydlab.in/" target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/08/2.png" alt="6"></a></div>
+          
+          <div class="uw-slide"><a href="https://careearthtrust.org/" target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/08/4.png" alt="7"></a></div>
+          
+          
+          <div class="uw-slide"><a href="https://www.gramvikas.org/" target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/09/6-1.png" alt="8"></a></div>
+          
+          
+          <div class="uw-slide"><a href="https://www.icfn.in/" target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/09/3-1.png
+" alt="9"></a></div>
+
+<div class="uw-slide"><a href="https://www.akahindia.org/" target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/09/Untitled-design.png
+" alt="10"></a></div>
+
+
+<div class="uw-slide"><a href="https://cedarindia.org/" target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/09/Untitled-design-1.png
+" alt="11"></a></div>
+
+
+<div class="uw-slide"><a href="https://iisc.ac.in/" target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/09/8-1.png
+" alt="12"></a></div>
+
+
+<div class="uw-slide"><a href=" " target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/09/4-1.png
+" alt="13"></a></div>
+
+
+<div class="uw-slide"><a href="https://uatdemo.urbanwaters.in/cities/pune/" target="_blank" rel="noopener"><img src="https://uatdemo.urbanwaters.in/wp-content/uploads/2025/09/5-1.png
+" alt="14"></a></div>
+
+
+        </div>
+      </div>
+
+      <button class="uw-arrow" id="uw-nextBtn" aria-label="Next">&#10095;</button>
+    </div>
+
+    <!-- bullets -->
+    <div class="uw-bullets" id="uw-bullets" aria-hidden="false"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Scope all DOM access to the carousel root element so nothing bleeds into the page
+  const root = document.getElementById('uw-carousel-1');
+  if(!root) return;
+
+  const viewport = root.querySelector('#uw-viewport');
+  const track = root.querySelector('#uw-track');
+  const prevBtn = root.querySelector('#uw-prevBtn');
+  const nextBtn = root.querySelector('#uw-nextBtn');
+  const bulletsWrap = root.querySelector('#uw-bullets');
+
+  // Read slides inside this track only
+  let slides = Array.from(track.children);
+  const originalCount = slides.length;
+  if(originalCount === 0) return;
+
+  // Use local variables for CSS property names (prefixed)
+  const autoInterval = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--uw-auto-interval')) || 5000;
+  const transitionTime = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--uw-transition-time')) || 400;
+
+  // Clone nodes for infinite loop (prepend and append a copy)
+  const prependClone = slides.map(node => node.cloneNode(true));
+  const appendClone  = slides.map(node => node.cloneNode(true));
+
+  appendClone.forEach(n => track.appendChild(n));
+  prependClone.reverse().forEach(n => track.insertBefore(n, track.firstChild));
+
+  // Recompute slides array and set up
+  slides = Array.from(track.children);
+  const totalSlides = slides.length; // originalCount * 3 (approx)
+
+  // Get slide width + gap dynamically (scoped)
+  function slideSize(){
+    const s = track.querySelector('.uw-slide');
+    const style = getComputedStyle(track);
+    const gap = parseFloat(style.gap) || 0;
+    const w = s.getBoundingClientRect().width;
+    return { w, gap, full: w + gap };
+  }
+
+  // state:
+  let currentIndex = 0;
+  let positionIndex = originalCount; // start at first original
+  let isTransitioning = false;
+  let autoTimer = null;
+
+  // Set initial transform so that the first visible is the first original slide
+  function setInitialPosition(){
+    const { full } = slideSize();
+    positionIndex = originalCount;
+    const x = - positionIndex * full;
+    track.style.transition = 'none';
+    track.style.transform = `translateX(${x}px)`;
+    void track.offsetWidth;
+    track.style.transition = `transform ${transitionTime}ms cubic-bezier(.22,.9,.35,1)`;
+    currentIndex = 0;
+  }
+
+  // build bullets scoped
+  function buildBullets(){
+    bulletsWrap.innerHTML = '';
+    for(let i=0;i<originalCount;i++){
+      const b = document.createElement('div');
+      b.className = 'uw-bullet' + (i===0? ' uw-active':'');
+      b.dataset.index = i;
+      bulletsWrap.appendChild(b);
+    }
+  }
+
+  function updateBullets(){
+    const bullets = bulletsWrap.children;
+    for(let i=0;i<bullets.length;i++){
+      bullets[i].classList.toggle('uw-active', i === currentIndex);
+    }
+  }
+
+  // Core: animate to positionIndex in expanded track
+  function slideTo(targetPositionIndex, opts = { animate: true }){
+    if(isTransitioning) return;
+    isTransitioning = true;
+    const { full } = slideSize();
+    positionIndex = targetPositionIndex;
+
+    if(!opts.animate) track.style.transition = 'none';
+    else track.style.transition = `transform ${transitionTime}ms cubic-bezier(.22,.9,.35,1)`;
+
+    track.style.transform = `translateX(${-positionIndex * full}px)`;
+
+    setTimeout(()=>{
+      const totalReal = originalCount;
+      // If moved into appended clones
+      if(positionIndex >= totalReal * 2){
+        const diff = positionIndex - (totalReal * 2);
+        positionIndex = totalReal + diff;
+        track.style.transition = 'none';
+        track.style.transform = `translateX(${-positionIndex * full}px)`;
+        void track.offsetWidth;
+      }
+      // If moved into prepended clones
+      if(positionIndex < totalReal){
+        positionIndex = totalReal + positionIndex;
+        track.style.transition = 'none';
+        track.style.transform = `translateX(${-positionIndex * full}px)`;
+        void track.offsetWidth;
+      }
+
+      currentIndex = (positionIndex - originalCount) % originalCount;
+      if(currentIndex < 0) currentIndex += originalCount;
+
+      isTransitioning = false;
+      updateBullets();
+    }, opts.animate ? transitionTime + 16 : 20);
+  }
+
+  // navigation helpers
+  function next(){
+    slideTo(positionIndex + 1, { animate: true });
+  }
+  function prev(){
+    slideTo(positionIndex - 1, { animate: true });
+  }
+  function goToIndex(logicalIdx){
+    slideTo(originalCount + logicalIdx, { animate: true });
+  }
+
+  // autoplay controls
+  function startAuto(){
+    stopAuto();
+    autoTimer = setInterval(()=> next(), autoInterval);
+  }
+  function stopAuto(){
+    if(autoTimer){ clearInterval(autoTimer); autoTimer = null; }
+  }
+
+  // Pause/resume helper
+  let resumeTimeout = null;
+  function pauseAndResume(){
+    stopAuto();
+    if(resumeTimeout) clearTimeout(resumeTimeout);
+    resumeTimeout = setTimeout(()=> startAuto(), 3000);
+  }
+
+  // Event wiring (scoped to root)
+  bulletsWrap.addEventListener('click', (e)=>{
+    const b = e.target.closest('.uw-bullet');
+    if(!b) return;
+    const idx = Number(b.dataset.index);
+    pauseAndResume();
+    goToIndex(idx);
+  });
+
+  nextBtn.addEventListener('click', ()=>{ pauseAndResume(); next(); });
+  prevBtn.addEventListener('click', ()=>{ pauseAndResume(); prev(); });
+
+  // touch support (scoped)
+  let startX = 0, dx = 0, touching = false;
+  viewport.addEventListener('touchstart', (e)=>{ touching = true; startX = e.touches[0].clientX; dx = 0; track.style.transition = 'none'; stopAuto(); }, {passive:true});
+  viewport.addEventListener('touchmove', (e)=>{ if(!touching) return; const now = e.touches[0].clientX; dx = now - startX; const { full } = slideSize(); track.style.transform = `translateX(${-positionIndex * full + dx}px)`; }, {passive:true});
+  viewport.addEventListener('touchend', (e)=>{ touching = false; const threshold = 30; if(Math.abs(dx) > threshold){ if(dx < 0) next(); else prev(); } else { slideTo(positionIndex, {animate:true}); } startAuto(); });
+
+  // keyboard (scoped)
+  viewport.addEventListener('keydown', (e)=>{ if(e.key === 'ArrowLeft'){ pauseAndResume(); prev(); } if(e.key === 'ArrowRight'){ pauseAndResume(); next(); } });
+
+  // resize -> recenter without visual jump
+  let resizeTimer = null;
+  window.addEventListener('resize', ()=> {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(()=> {
+      const { full } = slideSize();
+      track.style.transition = 'none';
+      track.style.transform = `translateX(${-positionIndex * full}px)`;
+      void track.offsetWidth;
+      track.style.transition = `transform ${transitionTime}ms cubic-bezier(.22,.9,.35,1)`;
+    }, 120);
+  });
+
+  // prevent dragging images inside this carousel only
+  track.querySelectorAll('img').forEach(img => img.addEventListener('dragstart', e => e.preventDefault()));
+
+  // initialize
+  setInitialPosition();
+  buildBullets();
+  updateBullets();
+  startAuto();
+
+  // expose api for debugging (scoped)
+  root._uw_carousel = { next, prev, goToIndex, stopAuto, startAuto };
+  
+   viewport.addEventListener('mouseenter', () => {
+    stopAuto();
+  });
+
+  viewport.addEventListener('mouseleave', () => {
+    startAuto();
+  });
+
+})();
+</script>
+
+</body>
+</html>
